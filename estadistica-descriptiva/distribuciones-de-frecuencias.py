@@ -54,24 +54,64 @@ if __name__ == "__main__":
     print(df.size)
 
     print("Frecuencia clases titanic: ")
-    frecuencia_de_clases_titanic = df["pclass"].value_counts(ascending=True)
+    frecuencia_de_clases_titanic = df.groupby('pclass')['pclass'].count() 
     print(frecuencia_de_clases_titanic)
+    print(frecuencia_de_clases_titanic.reset_index(name='value'))
 
     print("bar:")
-    x_values = []
-    y_values = []
+    
+    import pandas as pd
+    from bokeh.plotting import figure, output_file, show
+    from bokeh.models import ColumnDataSource
+    from bokeh.models.tools import HoverTool
 
-    for pclass, count in frecuencia_de_clases_titanic.iteritems():
-        print(f"Clase {pclass}: {count}")
-        x_values.append(f"class {pclass}")
-        y_values.append(count)
+    from bokeh.palettes import Spectral5
+    from bokeh.transform import factor_cmap
+    output_file('munitions_by_country.html')
 
-    graphic(figure="bar_basic",x_values=x_values,y_values=y_values,title="Pasajeros segun su clase en el Titanic",)
+    data = frecuencia_de_clases_titanic.reset_index(name='value')
+    # data['pclass'].astype('str')
+    print("=============")
+    data['pclass'] = data['pclass'].astype('str')
+    print(data['pclass'].astype('str'))
+    source = ColumnDataSource(data)
+    classes = source.data['pclass'].tolist()
+    p = figure(x_range=classes)
+    
+    color_map = factor_cmap(field_name='pclass', palette=Spectral5, factors=classes)
+    
+    p.vbar(x='pclass', top='value', source=source, width=0.70, color=color_map)
 
-    print("pie:")
-    data = pd.Series(frecuencia_de_clases_titanic).reset_index(name='value').rename(columns={'index': 'class'})
-    print(data)
-    print(data["class"])
-    graphic(figure="pie",title="Pasajeros segun su clase en el Titanic",data=data)
+    p.title.text ='Munitions Dropped by Allied Country'
+    p.xaxis.axis_label = 'Country'
+    p.yaxis.axis_label = 'Kilotons of Munitions'
+
+    hover = HoverTool()
+    hover.tooltips = [
+        ("Totals", "@value High Explosive")]
+
+    hover.mode = 'vline'
+
+    p.add_tools(hover)
+
+    show(p)
+
+    # print(classes)
+    show(p)
+    # x_values = []
+    # y_values = []
+
+    # for pclass, count in frecuencia_de_clases_titanic.iteritems():
+    #     print(f"Clase {pclass}: {count}")
+    #     x_values.append(f"class {pclass}")
+    #     y_values.append(count)
+
+    # graphic(figure="bar_basic",x_values=x_values,y_values=y_values,title="Pasajeros segun su clase en el Titanic",)
+
+    # print("pie:")
+    # data = pd.Series(frecuencia_de_clases_titanic).reset_index(name='value').rename(columns={'index': 'class'})
+    # print(data)
+    # print(data["class"])
+    # graphic(figure="pie",title="Pasajeros segun su clase en el Titanic",data=data)
 
     pass
