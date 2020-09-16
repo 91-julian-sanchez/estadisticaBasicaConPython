@@ -99,10 +99,10 @@ if __name__ == "__main__":
     print("bar:")
     graphic(figure="bar_basic", title="Pasajeros segun su clase en el Titanic", x_axis_label="Clase", y_axis_label="# pasajeros", data=data)
 
-    # print("pie:")
-    # data = pd.Series(frecuencia_de_clases_titanic).reset_index(name='value').rename(columns={'index': 'class'})
-    # print(data)
-    # print(data["class"])
-    # graphic(figure="pie",title="Pasajeros segun su clase en el Titanic",data=data)
+    print("pie:")
+    data = pd.Series(frecuencia_de_clases_titanic).reset_index(name='value').rename(columns={'index': 'class'})
+    print(data)
+    print(data["class"])
+    graphic(figure="pie",title="Pasajeros segun su clase en el Titanic",data=data)
 
     pass
