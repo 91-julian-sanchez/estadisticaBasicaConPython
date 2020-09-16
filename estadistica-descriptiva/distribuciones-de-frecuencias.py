@@ -1,23 +1,57 @@
 import pandas as pd
 
-def graphic(figure=None,x_values=None,y_values=None,title=None,data=None):
+def graphic(figure=None,x_values=None,y_values=None,title=None,x_axis_label=None,y_axis_label=None,data=None):
 
     if figure is 'bar_basic':
 
-        from bokeh.io import output_file, show
-        from bokeh.plotting import figure
+        import pandas as pd
+        from bokeh.plotting import figure, output_file, show
+        from bokeh.models import ColumnDataSource
+        from bokeh.models.tools import HoverTool
 
-        output_file("graphics/bar_basic.html")
+        from bokeh.palettes import Spectral5
+        from bokeh.transform import factor_cmap
+        output_file('munitions_by_country.html')
 
-        p = figure(x_range=x_values, plot_height=350, title=title,
-                   toolbar_location=None, tools="")
+        # raise Exception("xxx")
+        source = ColumnDataSource(data)
 
-        p.vbar(x=x_values, top=y_values, width=0.9)
+        x_range = source.data['pclass'].tolist()
+        p = figure(x_range=x_range)
+        
+        # color_map = factor_cmap(field_name='pclass', palette=Spectral5, factors=x_range)
+        
+        p.vbar(x='pclass', top='value', source=source, width=0.70)
 
-        p.xgrid.grid_line_color = None
-        p.y_range.start = 0
+        p.title.text = title
+        p.xaxis.axis_label = x_axis_label
+        p.yaxis.axis_label = y_axis_label
 
+        hover = HoverTool()
+        hover.tooltips = [
+            ("@pclass Total", "@value Pasajeros")]
+
+        hover.mode = 'vline'
+
+        p.add_tools(hover)
+
+        # print(classes)
         show(p)
+        
+        # from bokeh.io import output_file, show
+        # from bokeh.plotting import figure
+
+        # output_file("graphics/bar_basic.html")
+
+        # p = figure(x_range=x_values, plot_height=350, title=title,
+        #            toolbar_location=None, tools="")
+
+        # p.vbar(x=x_values, top=y_values, width=0.9)
+
+        # p.xgrid.grid_line_color = None
+        # p.y_range.start = 0
+
+        # show(p)
 
     elif figure is 'pie':
         from math import pi
@@ -56,58 +90,16 @@ if __name__ == "__main__":
     print("Frecuencia clases titanic: ")
     frecuencia_de_clases_titanic = df.groupby('pclass')['pclass'].count() 
     print(frecuencia_de_clases_titanic)
-    print(frecuencia_de_clases_titanic.reset_index(name='value'))
-
-    print("bar:")
-    
-    import pandas as pd
-    from bokeh.plotting import figure, output_file, show
-    from bokeh.models import ColumnDataSource
-    from bokeh.models.tools import HoverTool
-
-    from bokeh.palettes import Spectral5
-    from bokeh.transform import factor_cmap
-    output_file('munitions_by_country.html')
 
     data = frecuencia_de_clases_titanic.reset_index(name='value')
-    # data['pclass'].astype('str')
-    print("=============")
     data['pclass'] = data['pclass'].astype('str')
-    print(data['pclass'].astype('str'))
-    source = ColumnDataSource(data)
-    classes = source.data['pclass'].tolist()
-    p = figure(x_range=classes)
+    print("data")
+    print(data)
     
-    color_map = factor_cmap(field_name='pclass', palette=Spectral5, factors=classes)
+    print("bar:")
     
-    p.vbar(x='pclass', top='value', source=source, width=0.70, color=color_map)
-
-    p.title.text ='Munitions Dropped by Allied Country'
-    p.xaxis.axis_label = 'Country'
-    p.yaxis.axis_label = 'Kilotons of Munitions'
-
-    hover = HoverTool()
-    hover.tooltips = [
-        ("Totals", "@value High Explosive")]
-
-    hover.mode = 'vline'
-
-    p.add_tools(hover)
-
-    show(p)
-
-    # print(classes)
-    show(p)
-    # x_values = []
-    # y_values = []
-
-    # for pclass, count in frecuencia_de_clases_titanic.iteritems():
-    #     print(f"Clase {pclass}: {count}")
-    #     x_values.append(f"class {pclass}")
-    #     y_values.append(count)
-
-    # graphic(figure="bar_basic",x_values=x_values,y_values=y_values,title="Pasajeros segun su clase en el Titanic",)
-
+    
+    
     # print("pie:")
     # data = pd.Series(frecuencia_de_clases_titanic).reset_index(name='value').rename(columns={'index': 'class'})
     # print(data)
